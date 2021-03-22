@@ -136,3 +136,128 @@ lai  lai
 le  le
 ```
 
+### 3. awk
+
+​	一个强大的文本分析工具，把文件逐行的读入，以空格为默认分隔符将每行切片，切开的部分再进行分析处理。
+
+#### 1. 基本用法
+
+awk[选项参数] 'pattern1{action1} pattern2{action2}...' filename
+
+pattern: 表示awk在数据中查找的内容，就是匹配模式
+
+action: 在找到匹配内容时所执行的一系列命令
+
+#### 2. 选项参数说明
+
+-F 指定输入文件折分隔符
+
+-v 赋值一个用户定义变量
+
+#### 3. 案例实操
+
+（1）数据准备
+
+```
+➜  ~ sudo cp /etc/passwd ./
+```
+
+（2）搜索passwd文件以root关键字开头的所有行，并输出改行的第7列
+
+```
+➜  ~ awk -F : '/^root/{print $7}' passwd
+/bin/sh
+```
+
+（3）搜索passwd文件以root关键字开头的所有行，并输出该行的第1列和第7列，中间以“，”号隔开
+
+```
+➜  ~ awk -F : '/^root/{print $1,$7}' passwd 
+root /bin/sh
+```
+
+（4）只显示/etc/passwd的第一列和第七列，以逗号分隔，且在所有行前面添加列名user，shell在最后一行添加"dahaige, /bin/zuishuai"
+
+```
+➜  ~ awk -F : 'BEGIN{print "user,shell"} {print $1","$7} END{print "dahaige, bin/zuishuai"}' passwd
+```
+
+注意：BEGIN在所有数据读取行之前执行；END在所有数据执行之后执行。
+
+（5）将passed文件中的用户id增加数值1并输出
+
+```
+➜  ~ awk -F : -v i=1 '{print $3+$i}' passwd
+```
+
+#### 4. awk的内置变量
+
+FILENAME 文件名
+
+NR 已读的记录数
+
+NF 浏览记录的域的个数（切割后，列的个数）
+
+#### 5. 案例实操
+
+（1）统计passed文件名，每行的行号，每行的列数
+
+```
+➜  ~ awk -F : '{print FILENAME "," NR "," NF}' passwd
+```
+
+（2）切割IP
+
+```
+➜  ~ ifconfig en0 | grep "inet " | awk -F : '{print $2}' | awk -F " " '{print $1}'
+```
+
+（3）查询sed.txt中空行所在的行号
+
+```
+➜  ~ awk '/^$/ {print NR}' sed.txt
+```
+
+### 4. sort
+
+​	sort命令在Linux里非常有用，它将文件进行排序，并将plexus结果标准输出
+
+#### 1. 基本语法
+
+​	sort(选项)(参数)
+
+-n 依照数值的大小排序
+
+-r 以相反的顺序来排序
+
+-t 设置排序时所用的分隔字符
+
+-k 指定需要排序的列
+
+参数：指定待排序的文件列表
+
+#### 2. 案例实操
+
+（0）数据准备
+
+```
+➜  ~ vi sort.sh
+bb:40:5.4
+hd:20:4.2
+xz:50:2.3
+cls:10:3.
+```
+
+（1）按照": "分割后的第2列排序排序
+
+```
+➜  ~ sort -t : -nrk 2 sort.sh 
+xz:50:2.3
+bb:40:5.4
+ss:30:1.6
+hd:20:4.2
+cls:10:3.5
+```
+
+
+
